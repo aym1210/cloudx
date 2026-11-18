@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>CloudX — Web development after dark</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --k: #000;
+      --w: #fff;
+      --g: #9a9a9a;
+      --d: #1c1c1c;
+      --display: 'Syne', 'Helvetica Neue', Arial, sans-serif;
+      --body: 'Newsreader', Georgia, serif;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+      scroll-behavior: smooth;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      background: var(--k);
+      color: var(--w);
+      font-family: var(--body);
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: var(--display);
+      margin: 0;
+      line-height: .95;
+      letter-spacing: -.04em;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--w);
+      outline-offset: 3px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
+
+    #bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--w);
+      width: 0;
+      z-index: 20;
+    }
+
+    nav {
+      position: absolute;
+      top: env(safe-area-inset-top, 0px);
+      left: 0;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem clamp(1.25rem, 5vw, 3rem);
+      font-family: var(--display);
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -.05em;
+      text-decoration: none;
+    }
+
+    .logo b {
+      background: var(--w);
+      color: var(--k);
+      padding: 0 .14em;
+      border-radius: .16em;
+      margin-left: .05em;
+    }
+
+    nav a.pill {
+      border: 1.5px solid var(--w);
+      border-radius: 99px;
+      padding: .5rem 1.1rem;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    nav a.pill:hover {
+      background: var(--w);
+      color: var(--k);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      --mx: 50%;
+      --my: 40%;
+    }
+
+    .word {
+      position: relative;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(4rem, 23vw, 21rem);
+      line-height: .8;
+      letter-spacing: -.06em;
+      margin: 0 0 0 -.04em;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+      user-select: none;
+    }
+
+    .word span {
+      display: block;
+    }
+
+    .word .o {
+      color: transparent;
+      -webkit-text-stroke: 2px #555;
+    }
+
+    .word .f {
+      position: absolute;
+      inset: 0;
+      padding: inherit;
+      color: var(--w);
+      -webkit-mask-image: radial-gradient(
+        circle 240px at var(--mx) var(--my),
+        #000 0,
+        transparent 100%
+      );
+      mask-image: radial-gradient(
+        circle 240px at var(--mx) var(--my),
+        #000 0,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    .hero .wrap {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 2rem;
+      align-items: end;
+      padding-top: 2rem;
+      padding-bottom: clamp(2rem, 6vh, 4rem);
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 3.6vw, 3rem);
+      max-width: 16ch;
+    }
+
+    .hero p {
+      margin: 0 0 1.4rem;
+      color: var(--g);
+      max-width: 26rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--w);
+      color: var(--k);
+      font-family: var(--display);
+      font-weight: 800;
+      padding: 1rem 1.7rem;
+      border-radius: 99px;
+      text-decoration: none;
+      transition: transform .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .btn.ghost {
+      background: none;
+      color: var(--w);
+      border: 1.5px solid var(--w);
+    }
+
+    section {
+      padding: 7rem 0;
+    }
+
+    h2 {
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      max-width: 15ch;
+      margin-bottom: 3rem;
+    }
+
+    .lead {
+      color: var(--g);
+      max-width: 34rem;
+      margin: -1.5rem 0 3rem;
+    }
+
+    details {
+      border-top: 1px solid #333;
+    }
+
+    details:last-of-type {
+      border-bottom: 1px solid #333;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.6rem 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      letter-spacing: -.04em;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      font-weight: 500;
+      width: 2.6rem;
+      height: 2.6rem;
+      flex: none;
+      border: 1.5px solid var(--w);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      transition: transform .25s, background .25s, color .25s;
+    }
+
+    details[open] summary::after {
+      transform: rotate(45deg);
+      background: var(--w);
+      color: var(--k);
+    }
+
+    summary:hover {
+      color: var(--g);
+    }
+
+    details p {
+      margin: 0 0 2rem;
+      max-width: 38rem;
+      color: #cfcfcf;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: .3rem 2rem;
+      padding: 2rem clamp(1.25rem, 5vw, 3rem);
+      margin: 0 calc(-1 * clamp(1.25rem, 5vw, 3rem));
+      border-top: 1px solid #333;
+      transition: background .25s, color .25s;
+    }
+
+    .row:hover {
+      background: var(--w);
+      color: var(--k);
+    }
+
+    .row:hover p {
+      color: #333;
+    }
+
+    .row h3 {
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+    }
+
+    .row p {
+      margin: 0;
+      color: var(--g);
+      max-width: 34rem;
+      grid-column: 1;
+    }
+
+    .row .n {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      text-align: right;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -.05em;
+    }
+
+    .row .n s {
+      opacity: .4;
+      font-weight: 500;
+    }
+
+    .row .n small {
+      display: block;
+      font-size: .9rem;
+      font-weight: 500;
+      letter-spacing: 0;
+      opacity: .7;
+    }
+
+    .note {
+      font-size: .9rem;
+      color: var(--g);
+      margin-top: 1.5rem;
+    }
+
+    .say {
+      padding: 4rem 0 8rem;
+    }
+
+    .say blockquote {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.9rem, 5vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -.04em;
+      max-width: 22ch;
+      color: #555;
+    }
+
+    .say blockquote b {
+      color: var(--w);
+      font-weight: 700;
+    }
+
+    .end {
+      background: var(--w);
+      color: var(--k);
+      padding: 7rem 0 2.5rem;
+    }
+
+    .end h2 {
+      font-size: clamp(3rem, 10vw, 9rem);
+      max-width: none;
+      margin-bottom: 2rem;
+    }
+
+    .end p {
+      max-width: 30rem;
+      color: #333;
+    }
+
+    .end .btn {
+      background: var(--k);
+      color: var(--w);
+    }
+
+    .end footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 6rem;
+      padding-top: 1.5rem;
+      border-top: 1.5px solid var(--k);
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 760px) {
+      .hero .wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .word .o {
+        -webkit-text-stroke: 1.5px #666;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .btn,
+      summary::after,
+      .row {
+        transition: none;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="bar" aria-hidden="true"></div>
+
+  <header class="hero" id="hero">
+
+```
+<nav>
+  <a class="logo" href="#hero">Cloud<b>X</b></a>
+  <a class="pill" href="#contact">Start a project</a>
+</nav>
+
+<div class="word" aria-hidden="true">
+  <span class="o">CloudX</span>
+  <span class="f">CloudX</span>
+</div>
+
+<div class="wrap">
+  <h1>Web development for teams who work at night, too.</h1>
+
+  <div>
+    <p>
+      CloudX designs, builds and runs fast websites and web apps.
+      Dark by preference, precise by habit.
+    </p>
+
+    <a class="btn" href="#contact">Start a project</a>
+  </div>
+</div>
+```
+
+  </header>
+
+  <main>
+
+```
+<section aria-labelledby="sh">
+  <div class="wrap">
+
+    <h2 id="sh">What we build, from idea to uptime.</h2>
+
+    <details open>
+      <summary>Strategy and discovery</summary>
+      <p>
+        We talk to your customers, audit what you have and decide what is
+        worth building. You leave with a plan, a scope and a price.
+      </p>
+    </details>
+
+    <details>
+      <summary>Design and brand</summary>
+      <p>
+        Interface design, content structure and a visual system your team
+        can extend without calling us.
+      </p>
+    </details>
+
+    <details>
+      <summary>Engineering</summary>
+      <p>
+        Fast front ends, dependable back ends, accessible by default.
+        Every build ships with tests and a performance budget.
+      </p>
+    </details>
+
+    <details>
+      <summary>Launch and care</summary>
+      <p>
+        We deploy, monitor and keep improving. After launch you get a
+        named engineer, not a ticket queue.
+      </p>
+    </details>
+
+  </div>
+</section>
+
+<section aria-labelledby="wh" style="padding-top: 2rem">
+  <div class="wrap">
+
+    <h2 id="wh">Results, in plain numbers.</h2>
+
+    <div class="row">
+      <h3>Forming Opinions</h3>
+
+      <p>
+        The time it takes for users to form an opinion about a website is
+        incredibly brief according to Google Research.
+      </p>
+
+      <div class="n">
+        <s>4.2s</s> 0.05s
+        <small>Reaction Speed</small>
+      </div>
+    </div>
+
+    <div class="row">
+      <h3>Mobile Usability</h3>
+
+      <p>
+        Some 74% of online users are likely to revisit a website if it has
+        a mobile-friendly design, making it crucial for websites to
+        optimise their designs for mobile devices.
+      </p>
+
+      <div class="n">
+        +74%
+        <small>Revisits</small>
+      </div>
+    </div>
+
+    <div class="row">
+      <h3>Credibility</h3>
+
+      <p>
+        Almost half (48%) say the number one way they decide on the
+        credibility of a business is determined by the web design.
+      </p>
+
+      <div class="n">
+        48%
+        <small>Credibility</small>
+      </div>
+    </div>
+
+    <p class="note">
+      Statistics are sourced from:
+      <a href="https://www.forbes.com/advisor/au/business/software/website-statistics/" target="_blank" rel="noopener">
+        Forbes Advisor
+      </a>
+    </p>
+
+  </div>
+</section>
+
+<section class="say" aria-label="Our belief">
+  <div class="wrap">
+
+    <blockquote>
+      A website should feel light.
+      <b>
+        The heavier it is to load, the further it is from the person using it.
+      </b>
+      We keep the distance short.
+    </blockquote>
+
+  </div>
+</section>
+
+<section class="end" id="contact" aria-labelledby="gh">
+  <div class="wrap">
+
+    <h2 id="gh">Lights on when you are ready.</h2>
+
+    <p>
+      Tell us what you are building and when you need it. We reply within
+      one working day with questions, not a sales pitch.
+    </p>
+
+    <a class="btn" href="mailto:cloudxweb.admin@gmail.com">
+      Email cloudxweb.admin@gmail.com
+    </a>
+
+    <footer>
+      <span>CloudX Web Development</span>
+      <span>Remote-first. Working in every time zone.</span>
+      <span>&copy; 2026</span>
+    </footer>
+
+  </div>
+</section>
+```
+
+  </main>
+
+  <script>
+    (function () {
+      var h = document.getElementById('hero');
+      var b = document.getElementById('bar');
+      var wd = h.querySelector('.word');
+
+      h.addEventListener('pointermove', function (e) {
+        var r = wd.getBoundingClientRect();
+
+        h.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        h.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+
+      function updateScrollBar() {
+        var maxScroll = document.documentElement.scrollHeight - innerHeight;
+        b.style.width =
+          (maxScroll > 0 ? scrollY / maxScroll * 100 : 0) + '%';
+      }
+
+      addEventListener('scroll', updateScrollBar, { passive: true });
+      updateScrollBar();
+    })();
+  </script>
+
+</body>
+</html>
